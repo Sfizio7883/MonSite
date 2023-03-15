@@ -1,4 +1,5 @@
 const Mot = 'bonjour';
+var occurencesParLettre = new Map();
 var LettreVide = ".";
 var GrilleMotus = [];
 var tabColor =[];
@@ -15,9 +16,32 @@ InitialiserJeu();
 function InitialiserJeu(){
     finJeu = false;
     NbrCoups = 0;
+    
+    // Enregistrements des lettres présentes dans le mots et de leur nombre de fois
+    occurencesParLettre = SauvegardeLettreMot(Mot.toUpperCase());
 
+    // Initialisation de la première ligne du jeu avec la première lettre et des points
     this.GrilleMotus = InitialisationGrilleMotus(NbrLignes, NbrColonnes, Mot[0]);
+
+    // Premier affichage du jeu
     afficherGrilleMotus(NbrCoups);
+}
+
+function SauvegardeLettreMot(Mot){
+    var occurencesParLettreLocal = new Map();
+    
+    for (let character of Mot){
+        if (!occurencesParLettreLocal.has(character)){
+            occurencesParLettreLocal.set(character, 1);
+        }
+        else{
+            let nbOccurence = occurencesParLettreLocal.get(character);
+            nbOccurence++;
+            occurencesParLettreLocal.set(character, nbOccurence);
+        } 
+    }
+    //console.log(occurencesParLettreLocal);
+    return occurencesParLettreLocal;
 }
 
 function InitialisationGrilleMotus(NbrLignes, NbrColonnes, PreLettre){
@@ -27,7 +51,7 @@ function InitialisationGrilleMotus(NbrLignes, NbrColonnes, PreLettre){
 
     // Init de la première lettre avec la couleur Vert
     ligne.push(PreLettre);
-    ligneColor.push('2');
+    ligneColor.push('0');
 
     // Boucle sur les 6 lettres suivantes pour les initialiser avec . et la couleur blanc
     for(var j=1;j < NbrColonnes; j++){
@@ -117,6 +141,7 @@ function AlimentationGrilleMotus(NbrCoups){
     for(var j=0;j <= NbrColonnes; j++){
         ligne.push(PropositionMot.value[j]);
     }
+
     this.GrilleMotus.splice(NbrCoups, 1, ligne);
     ligneColor = ComparaisonMot();
     this.tabColor.splice(NbrCoups, 1, ligneColor)
@@ -126,16 +151,15 @@ function AlimentationGrilleMotusNext(){
     var ligne = [];
     var ligneColor = [];
     ligne[0] = Mot[0];
-    ligneColor.push('2');
+    ligneColor.push('0');
     for(var j=1;j <= NbrColonnes; j++){
         if (this.MotEnCours[j] === 1){
             ligne.push(Mot[j]);
-            ligneColor.push('2');
         }
         else{
             ligne.push('.');
-            ligneColor.push('0');
         }
+        ligneColor.push('0');
     }
     this.GrilleMotus.push(ligne);
     this.tabColor.push(ligneColor);
@@ -153,27 +177,54 @@ function AlimentationGrilleMotusLast(){
 }
 
 function ComparaisonMot(){
+    var occurencesParLettre = this.occurencesParLettre;
     var tabColorComparaison = [];
+    var BonneLettre = [];
     var MotADeviner = Mot.toUpperCase();
     var MotPropose = PropositionMot.value.toUpperCase();
-    
-    for(var i=0;i <= NbrColonnes; i++){
 
-        // Alimentation du tableau des lettres déjà trouvées pour le prochain coup
-        if (!(MotEnCours[i] === 1)){
-            if ((MotPropose[i]) === MotADeviner[i]){
-                MotEnCours[i] = 1;
-            }
+    // Aliemntation du tableau des bonnes lettres entre le mot proposé et le mot à deviner
+    for (let i = 0; i < 7; i++){
+        if (MotPropose[i] === MotADeviner[i]){
+            BonneLettre[i] = 1;
+            var n = occurencesParLettre.get(MotPropose[i]);
+            n--;
+            occurencesParLettre.set(MotPropose[i], n);
         }
+        else BonneLettre[i] = 0;
+    }
 
-        // Alimentation tableau des couleurs du mot proposé
-        if ((MotPropose[i]) === MotADeviner[i]){
+    // Alimentation du tableau des lettres déjà trouvées pour le prochain coup + couleur
+    for (let i = 0; i < 7; i++){
+        // Si la lettre proposé est correcte = lettre affichée pour le prochain coup + couleur verte
+        if (BonneLettre[i] === 1){
+            MotEnCours[i] = 1
             tabColorComparaison.push('2');
         }
         else{
-            tabColorComparaison.push('0'); 
+            // Si le mot contient la lettre proposée mais pas au bon endroit
+            if (occurencesParLettre.has(MotPropose[i])){
+
+                // Récupération du nombre de fois que la lettre apparait dans le mot
+                var n = occurencesParLettre.get(MotPropose[i]);
+
+                // Si la lettre apparait au moins 1 fois dans le mot
+                if (n > 0){
+
+                    // On supprime une fois cette lettre dans les lettres présentes dans le mot + couleur orange
+                    n--;
+                    tabColorComparaison.push('1');
+                }
+                // Lettre non présente dans le mot = Couleur blanche
+                else tabColorComparaison.push('0');
+            } 
+            else {
+                // Lettre non présente dans le mot = Couleur blanche
+                tabColorComparaison.push('0');
+            }
         }
     }
+
     // Si mot trouvé alors fin du jeu
     if (MotADeviner === MotPropose){
         finJeu = true;
