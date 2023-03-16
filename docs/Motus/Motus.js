@@ -175,7 +175,7 @@ function AlimentationGrilleMotusLast(){
 }
 
 function ComparaisonMot(){
-    var occurencesParLettre = this.occurencesParLettre;
+    var occurencesParLettreL = SauvegardeLettreMot(Mot.toUpperCase());
     var tabColorComparaison = [];
     var BonneLettre = [];
     var MotADeviner = Mot.toUpperCase();
@@ -185,14 +185,12 @@ function ComparaisonMot(){
     for (let i = 0; i < 7; i++){
         if (MotPropose[i] === MotADeviner[i]){
             BonneLettre[i] = 1;
-            var n = occurencesParLettre.get(MotPropose[i]);
+            var n = occurencesParLettreL.get(MotPropose[i]);
             n--;
-            occurencesParLettre.set(MotPropose[i], n);
+            occurencesParLettreL.set(MotPropose[i], n);
         }
         else BonneLettre[i] = 0;
     }
-    console.log(BonneLettre);
-    console.log(occurencesParLettre);
 
     // Alimentation du tableau des lettres déjà trouvées pour le prochain coup + couleur
     for (let i = 0; i < 7; i++){
@@ -203,18 +201,17 @@ function ComparaisonMot(){
         }
         else{
             // Si le mot contient la lettre proposée mais pas au bon endroit
-            if (occurencesParLettre.has(MotPropose[i])){
+            if (occurencesParLettreL.has(MotPropose[i])){
 
                 // Récupération du nombre de fois que la lettre apparait dans le mot
-                var n = occurencesParLettre.get(MotPropose[i]);
-
+                var n = occurencesParLettreL.get(MotPropose[i]);
                 // Si la lettre apparait au moins 1 fois dans le mot
                 if (n > 0){
 
                     // On supprime une fois cette lettre dans les lettres présentes dans le mot + couleur orange
                     n--;
                     tabColorComparaison.push('1');
-                    occurencesParLettre.set(MotPropose[i], n);
+                    occurencesParLettreL.set(MotPropose[i], n);
                 }
                 // Lettre non présente dans le mot = Couleur blanche
                 else tabColorComparaison.push('0');
