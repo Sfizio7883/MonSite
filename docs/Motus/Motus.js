@@ -35,12 +35,11 @@ function SauvegardeLettreMot(Mot){
             occurencesParLettreLocal.set(character, 1);
         }
         else{
-            let nbOccurence = occurencesParLettreLocal.get(character);
+            var nbOccurence = occurencesParLettreLocal.get(character);
             nbOccurence++;
             occurencesParLettreLocal.set(character, nbOccurence);
         } 
     }
-    //console.log(occurencesParLettreLocal);
     return occurencesParLettreLocal;
 }
 
@@ -55,7 +54,7 @@ function InitialisationGrilleMotus(NbrLignes, NbrColonnes, PreLettre){
 
     // Boucle sur les 6 lettres suivantes pour les initialiser avec . et la couleur blanc
     for(var j=1;j < NbrColonnes; j++){
-        ligne.push('.');
+        ligne.push(LettreVide);
         ligneColor.push('0');
     }
     // Ecriture de la première ligne et des couleurs des caractères
@@ -87,7 +86,6 @@ function afficherGrilleMotus(NbrCoups){
                         Color = " bg-danger";
                         break;
                 }
-                //console.log("<td class=' border" + Color + "' width='50' height='50'>");
                 content += "<td class=' border" + Color + "' width='50' height='50'>";
                 content += '<p class="text-center text-uppercase font-weight-bold" style="margin-top:10px;font-size: 20px">' + this.GrilleMotus[i][j] + '</p>'
                 content += "</td>";
@@ -183,7 +181,7 @@ function ComparaisonMot(){
     var MotADeviner = Mot.toUpperCase();
     var MotPropose = PropositionMot.value.toUpperCase();
 
-    // Aliemntation du tableau des bonnes lettres entre le mot proposé et le mot à deviner
+    // Alimentation du tableau des bonnes lettres entre le mot proposé et le mot à deviner
     for (let i = 0; i < 7; i++){
         if (MotPropose[i] === MotADeviner[i]){
             BonneLettre[i] = 1;
@@ -218,10 +216,8 @@ function ComparaisonMot(){
                 // Lettre non présente dans le mot = Couleur blanche
                 else tabColorComparaison.push('0');
             } 
-            else {
-                // Lettre non présente dans le mot = Couleur blanche
-                tabColorComparaison.push('0');
-            }
+            // Lettre non présente dans le mot = Couleur blanche
+            else tabColorComparaison.push('0');
         }
     }
 
