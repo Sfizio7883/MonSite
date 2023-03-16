@@ -191,6 +191,8 @@ function ComparaisonMot(){
         }
         else BonneLettre[i] = 0;
     }
+    console.log(BonneLettre);
+    console.log(occurencesParLettre);
 
     // Alimentation du tableau des lettres déjà trouvées pour le prochain coup + couleur
     for (let i = 0; i < 7; i++){
@@ -212,6 +214,7 @@ function ComparaisonMot(){
                     // On supprime une fois cette lettre dans les lettres présentes dans le mot + couleur orange
                     n--;
                     tabColorComparaison.push('1');
+                    occurencesParLettre.set(MotPropose[i], n);
                 }
                 // Lettre non présente dans le mot = Couleur blanche
                 else tabColorComparaison.push('0');
